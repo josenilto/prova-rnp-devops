@@ -1,0 +1,98 @@
+{
+  "annotations": {"list":[]},
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Disponibilidade por Cliente (%)",
+      "datasource": "InfluxDB",
+      "gridPos": {"x":0,"y":0,"w":12,"h":8},
+      "targets": [
+        {
+          "measurement": "viaipe_cliente",
+          "select":[[{"type":"field","params":["disponibilidade"]},{"type":"mean","params":[]}]],
+          "groupBy":[{"type":"time","params":["$interval"]},{"type":"tag","params":["client"]}],
+          "refId":"A",
+          "resultFormat":"time_series"
+        }
+      ],
+      "fieldConfig":{"defaults":{"unit":"percent"},"overrides":[]}
+    },
+    {
+      "type": "timeseries",
+      "title": "Consumo de Banda por Cliente (B/s)",
+      "datasource": "InfluxDB",
+      "gridPos": {"x":12,"y":0,"w":12,"h":8},
+      "targets": [
+        {
+          "measurement": "viaipe_cliente",
+          "select":[[{"type":"field","params":["consumo_banda"]},{"type":"mean","params":[]}]],
+          "groupBy":[{"type":"time","params":["$interval"]},{"type":"tag","params":["client"]}],
+          "refId":"A",
+          "resultFormat":"time_series"
+        }
+      ],
+      "fieldConfig":{"defaults":{"unit":"Bps"},"overrides":[]}
+    },
+    {
+      "type": "timeseries",
+      "title": "Qualidade (latência ms) por Cliente",
+      "datasource": "InfluxDB",
+      "gridPos": {"x":0,"y":8,"w":12,"h":8},
+      "targets": [
+        {
+          "measurement": "viaipe_cliente",
+          "select":[[{"type":"field","params":["qualidade"]},{"type":"mean","params":[]}]],
+          "groupBy":[{"type":"time","params":["$interval"]},{"type":"tag","params":["client"]}],
+          "refId":"A",
+          "resultFormat":"time_series"
+        }
+      ],
+      "fieldConfig":{"defaults":{"unit":"ms"},"overrides":[]}
+    },
+    {
+      "type": "timeseries",
+      "title": "Perda de Pacotes (%) por Cliente",
+      "datasource": "InfluxDB",
+      "gridPos": {"x":12,"y":8,"w":12,"h":8},
+      "targets": [
+        {
+          "measurement": "viaipe_cliente",
+          "select":[[{"type":"field","params":["packets_loss"]},{"type":"mean","params":[]}]],
+          "groupBy":[{"type":"time","params":["$interval"]},{"type":"tag","params":["client"]}],
+          "refId":"A",
+          "resultFormat":"time_series"
+        }
+      ],
+      "fieldConfig":{"defaults":{"unit":"percent"},"overrides":[]}
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 30,
+  "style": "dark",
+  "tags":["viaipe","clientes"],
+  "templating":{
+    "list":[
+      {
+        "name":"client",
+        "label":"Cliente",
+        "type":"query",
+        "datasource":"InfluxDB",
+        "query":"SHOW TAG VALUES FROM \"viaipe_cliente\" WITH KEY = \"client\"",
+        "includeAll": true,
+        "multi": false,
+        "allFormat":"glob"
+      }
+    ]
+  },
+  "time": {"from": "now-1h","to":"now"},
+  "timepicker":{},
+  "timezone":"",
+  "title":"Dashboard Operacional ViaIpe - Clientes",
+  "uid":"viaipe-clientes",
+  "version":1
+}

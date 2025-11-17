@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./influxdb:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana:9.0.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+
+  agent:
+    build: ./agent
+    container_name: web-agent
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+  viaipe-agent:
+    build: ./agent-viaipe
+    container_name: viaipe-agent
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+    environment:
+      - VIAIPE_API_URL=https://legadoviaipe.rnp.br/api/norte
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_DB=monitoring
+      - INTERVAL=300

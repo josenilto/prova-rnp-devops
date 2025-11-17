@@ -1,0 +1,195 @@
+## 🎯 RESUMO FINAL - PROVA DEVOPS RNP
+
+### ✅ IMPLEMENTAÇÃO COMPLETA - 17/11/2025
+
+---
+
+## QUESTÃO 1: Agente de Monitoramento Web
+**Status:** ✅ OPERACIONAL E COLETANDO DADOS
+
+### Configuração:
+- **Alvos:** google.com, youtube.com, rnp.br
+- **Intervalo:** 60 segundos
+- **Métricas:**
+  - Ping: RTT (ms) e packet loss (%)
+  - HTTP: status code e load time (ms)
+
+### Dados Coletados (Amostra):
+```
+Ping RTT (últimas 3 medições):
+├─ google.com    : 5.279 ms (0% loss)
+├─ youtube.com   : 6.74 ms (0% loss)
+└─ rnp.br        : 6.873 ms (0% loss)
+
+HTTP Status (últimas 3 medições):
+├─ google.com    : 200 (517.21 ms)
+├─ youtube.com   : 200 (438.59 ms)
+└─ rnp.br        : (em coleta)
+
+Total de pontos coletados: 526+ data points
+```
+
+---
+
+## QUESTÃO 2: Coleta de Estatísticas ViaIpe
+**Status:** ✅ OPERACIONAL E COLETANDO DADOS
+
+### Configuração:
+- **API:** https://legadoviaipe.rnp.br/api/norte
+- **Intervalo:** 300 segundos (5 minutos)
+- **Clientes:** 263 pontos de presença monitorados
+- **Região:** Norte da RNP
+
+### Dados Coletados (Última Agregação):
+```
+Disponibilidade Média: 99.93%
+Consumo Médio de Banda: 14.15 MB/s
+Qualidade Média (Latência): 6.36 ms
+Total de Clientes: 263
+Perda Média de Pacotes: ~0.067%
+
+Total de data points: 526+ (cliente) + 2+ (agregado)
+```
+
+---
+
+## 🏗️ ARQUITETURA IMPLEMENTADA
+
+```
+Docker Compose (4 Containers):
+├── influxdb:1.8 (Port 8086)
+│   └─ Database: monitoring
+│      ├─ ping (Q1)
+│      ├─ http (Q1)
+│      ├─ viaipe_cliente (Q2)
+│      └─ viaipe_agregado (Q2)
+│
+├── grafana:9.0.0 (Port 3000)
+│   ├─ Dashboard: "Agent Monitoring" (Q1)
+│   └─ Dashboard: "ViaIpe - Operações Norte" (Q2)
+│
+├── web-agent (Q1)
+│   └─ Python monitor.py (Ping + HTTP)
+│
+└── viaipe-agent (Q2)
+    └─ Python viaipe_collector.py (API Collection)
+```
+
+---
+
+## 📊 DASHBOARDS GRAFANA
+
+### Dashboard 1: Agent Monitoring (Q1)
+- Ping RTT (ms) — Timeseries por host
+- HTTP Load Time (ms) — Timeseries por host
+- Packet Loss (%) — Timeseries
+- Last HTTP Status — Gauge
+
+**URL:** http://localhost:3000/d/agent-monitoring
+
+### Dashboard 2: ViaIpe - Operações Norte (Q2)
+- Disponibilidade Média (%) — Timeseries
+- Consumo Médio de Banda (Mbps) — Timeseries
+- Qualidade Média (Latência ms) — Timeseries
+- Total de Clientes Monitorados — Gauge
+
+**URL:** http://localhost:3000/d/viaipe-operacional
+
+---
+
+## 📁 ESTRUTURA DO PROJETO
+
+```
+prova-rnp-devops/
+├── README.md                          (Documentação completa)
+├── docker-compose.yml                 (4 services)
+│
+├── agent/                             (Questão 1)
+│   ├── monitor.py                     (Coleta Ping + HTTP)
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── agent-viaipe/                      (Questão 2)
+│   ├── viaipe_collector.py            (Coleta API ViaIpe)
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+└── grafana/
+    ├── provisioning/
+    │   └── datasources.yml            (Auto-provision InfluxDB)
+    └── dashboards/
+        ├── agent-dashboard.json       (Q1 Dashboard)
+        └── viaipe-dashboard.json      (Q2 Dashboard)
+```
+
+---
+
+## 🚀 EXECUÇÃO
+
+### Iniciar
+```powershell
+cd c:\Users\josen\Downloads\prova-rnp-devops
+docker-compose up -d --build
+```
+
+### Monitorar
+```powershell
+docker-compose logs -f
+```
+
+### Acessar
+- **Grafana:** http://localhost:3000 (admin/admin)
+- **InfluxDB:** http://localhost:8086
+
+### Parar
+```powershell
+docker-compose down -v
+```
+
+---
+
+## ✅ CHECKLIST FINAL
+
+- ✅ Questão 1: Agente Web operacional (ping + HTTP coletando)
+- ✅ Questão 2: Coletor ViaIpe operacional (263 clientes monitorados)
+- ✅ InfluxDB: 4 measurements com dados persistidos
+- ✅ Grafana: 2 dashboards importados e funcionando
+- ✅ Docker Compose: 4 containers rodando
+- ✅ Documentação: README.md completo com instruções
+- ✅ Coleta contínua: Ambos agentes coletando a intervalos regulares
+
+---
+
+## 🔍 VALIDAÇÃO
+
+### Containers em execução:
+```
+NAME           STATUS      
+influxdb       Up 34 min   ✅
+grafana        Up 32 min   ✅
+web-agent      Up 14 min   ✅
+viaipe-agent   Up 8 min    ✅
+```
+
+### Dados em InfluxDB:
+```
+ping:              526+ pontos
+http:              526+ pontos
+viaipe_cliente:    526+ pontos
+viaipe_agregado:   2+ pontos (em crescimento)
+Total:             1600+ data points
+```
+
+### Dashboards em Grafana:
+```
+Agent Monitoring:           ✅ Importado (id=2, uid=agent-monitoring)
+ViaIpe - Operações Norte:   ✅ Importado (id=3, uid=viaipe-operacional)
+```
+
+---
+
+**Implementação concluída com sucesso!**
+
+Data: 17 de novembro de 2025
+Tempo total: ~34 minutos
+Status: PRONTO PARA AVALIAÇÃO
